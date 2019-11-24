@@ -21,38 +21,37 @@ export class InputReceipts extends React.Component<AppProps> {
             try {
                 const response = await fetch("http://localhost:3001/processImage", {
                     method: "POST",
+                    // mode: 'no-cors', // no-cors, *cors, same-origin
+                    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                    credentials: 'omit', // include, *same-origin, omit
+                    headers: {
+                        // 'Content-Type': file.type
+                        'Content-Type': 'application/json'
+                    },
+                    redirect: 'follow', // manual, *follow, error
+                    referrer: 'no-referrer', // no-referrer, *client
                     body: file
                 });
-                // const items = await response.json();
-            } catch (e) {
-                // console.error(e)
-            }
-            const items: Item[] = [{
-                name: "gambling",
-                amount: 10000
-            }, {
-                name: "pizza",
-                amount: 80000
-            }, {
-                name: "vegetables",
-                amount: 800
-            }, {
-                name: "snacks",
-                amount: 800
-            }];
+                // console.log(response);
+                // console.log(await response.blob());
+                // console.log("this is the blob >",await response.blob())
+                const items = await response.json() as Item[];
 
-            const emptyItems: Item[] = [];
-            const missing = items.reduce((pr, cu) => {
-                const match = newItems.find((item) => item.name === cu.name);
-                if (match === undefined) {
-                    return pr.concat(cu)
-                } else {
-                    match.amount += cu.amount;
-                    return pr
-                }
-            }, emptyItems);
-            newItems = newItems.concat(missing);
-            newFiles.push(file)
+                const emptyItems: Item[] = [];
+                const missing = items.reduce((pr, cu) => {
+                    const match = newItems.find((item) => item.name === cu.name);
+                    if (match === undefined) {
+                        return pr.concat(cu)
+                    } else {
+                        match.amount += cu.amount;
+                        return pr
+                    }
+                }, emptyItems);
+                newItems = newItems.concat(missing);
+                newFiles.push(file)
+            } catch (e) {
+                console.error(e)
+            }
         }
 
         this.app.setState(Object.assign({}, this.app.state, {
@@ -79,7 +78,7 @@ export class InputReceipts extends React.Component<AppProps> {
                 type="file"
                 id="avatar"
                 name="image"
-                accept="image/png, image/jpeg"
+                accept="image/jpeg"
                 multiple={true}
                 onChange={async (event) => {
                     if (event.target.files !== null) {

@@ -50,7 +50,7 @@ class App extends React.Component<any, AppState> {
             retireTarget: undefined,
             items: [{name: "it", amount: 100}],
             files: [],
-            currentScreen: 6
+            currentScreen: 0
         }
 
     }
