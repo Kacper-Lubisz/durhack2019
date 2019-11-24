@@ -59,8 +59,10 @@ class App extends React.Component<any, AppState> {
         return (
             <div className="App">
                 <header className="App-header">
-                    <h1>[The name]</h1>
-                    <img src={logo} className="App-logo" alt="logo"/>
+                    <h1 style={{
+                        marginBottom: 40
+                    }}>FinZen</h1>
+                    {/*<img src={logo} className="App-logo" alt="logo"/>*/}
 
                     {this.screens.map((screen, index: number) => {
                         if (this.state.currentScreen === index) {
@@ -111,7 +113,6 @@ interface AppState {
 
     currentScreen: number
 }
-
 
 
 export default App;
