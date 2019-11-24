@@ -25,8 +25,9 @@ export class OutputCategories extends React.Component<AppProps, OutputCategories
             return txt.substr(0, 1).toUpperCase() + txt.substr(1).toLowerCase()
         }
 
-        let removedItems: Item[] = this.state.removed.map((index) => this.app.state.items[index]);
-        console.log(removedItems);
+        let removedItems: Item[] = this.app.state.items.filter((a, index) => this.state.removed[index])
+            .map((a, index) => this.app.state.items[index]);
+
         return (
             <div>
                 <h3>From {this.app.state.files.length} receipt{this.app.state.files.length !== 1 ? "s" : ""}, you spent
@@ -38,7 +39,9 @@ export class OutputCategories extends React.Component<AppProps, OutputCategories
                 {removedItems.length !== 0 && (
                     <div>If you stopped spending
                         on {removedItems.map((item) => item.name).reduce((p, c) => p + ", " + c)} , you
-                        would save {removedItems.map((item) => item.amount).reduce((a, b) => a + b)} each week!</div>
+                        would save
+                        £{((removedItems.map((item) => item.amount).reduce((a, b) => a + b)) / 100).toFixed(2)} each
+                        week!</div>
                 )}
 
 
@@ -54,20 +57,17 @@ export class OutputCategories extends React.Component<AppProps, OutputCategories
                             return <tr key={index}>
                                 <td>{toTitleCase(item.name)}</td>
                                 <td>£{(item.amount / 100).toFixed(2)}</td>
-                                <td><input checked={this.state.removed.find((item, index2) => index2 = index)
-                                === undefined}
-                                           type={"checkbox"} onChange={(event) => {
-                                    if (event.target.checked) {
-                                        this.state.removed.push(index)
-                                        console.log(this.state.removed);
-                                    } else {
-                                        this.setState(Object.assign({}, this.state, {
-                                            removed: this.state.removed.filter(((value, index1) => index1 !== index))
-                                        }), () => {
-                                            console.log(this.state.removed);
-                                        })
+                                <td><input checked={this.state.removed[index]} type={"checkbox"} onChange={(event) => {
 
-                                    }
+                                    const newRemoved = this.state.removed;
+                                    newRemoved[index] = !newRemoved[index];
+
+                                    this.setState(Object.assign({}, this.state, {
+                                        removed: newRemoved
+                                    }));
+
+                                    this.forceUpdate();
+
                                 }}/></td>
                             </tr>
                         })
