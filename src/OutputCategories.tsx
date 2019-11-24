@@ -24,9 +24,7 @@ export class OutputCategories extends React.Component<AppProps, OutputCategories
         function toTitleCase(txt: string) {
             return txt.substr(0, 1).toUpperCase() + txt.substr(1).toLowerCase()
         }
-
-        let removedItems: Item[] = this.app.state.items.filter((a, index) => this.state.removed[index])
-            .map((a, index) => this.app.state.items[index]);
+        let removedItems: Item[] = this.app.state.items.filter((a, index) => this.state.removed[index]);
 
         return (
             <div>
@@ -35,15 +33,6 @@ export class OutputCategories extends React.Component<AppProps, OutputCategories
                     total of £{
                         (this.app.state.items.map((item) => item.amount).reduce((a, b) => a + b, 0) / 100).toFixed(2)
                     }</h3>
-
-                {removedItems.length !== 0 && (
-                    <div>If you stopped spending
-                        on {removedItems.map((item) => item.name).reduce((p, c) => p + ", " + c)} , you
-                        would save
-                        £{((removedItems.map((item) => item.amount).reduce((a, b) => a + b)) / 100).toFixed(2)} each
-                        week!</div>
-                )}
-
 
                 <table style={{marginLeft: "auto", marginRight: "auto"}}>
                     <tbody>
@@ -74,6 +63,15 @@ export class OutputCategories extends React.Component<AppProps, OutputCategories
                     }
                     </tbody>
                 </table>
+
+                {removedItems.length !== 0 && (
+                    <div>If you stopped spending
+                        on {removedItems.map((item) => item.name).reduce((p, c) => p + ", " + c)} , you
+                        would save
+                        £{((removedItems.map((item) => item.amount).reduce((a, b) => a + b)) / 100).toFixed(2)} each
+                        week!</div>
+                )}
+
             </div>
         )
     }
