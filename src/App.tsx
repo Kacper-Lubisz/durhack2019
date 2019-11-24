@@ -1,5 +1,5 @@
 import React, {ReactNode} from 'react';
-import logo from './logo.svg';
+import logo from './logo.png';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {InputFullEarnings} from "./InputFullEarnings";
