@@ -1,268 +1,26 @@
 import React, {ReactNode} from 'react';
 import logo from './logo.svg';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {InputFullEarnings} from "./InputFullEarnings";
+import {InputSaveAmount} from "./InputSaveAmount";
+import {InputEarnings} from "./InputEarnings";
+import {InputRetireTarget} from "./InputRetireTarget";
+import {InputDOB} from "./InputDOB";
+import {InputName} from "./InputName";
+import {InputReceipts} from "./InputReceipts";
+import {OutputCategories} from "./OutputCategories";
+import {NavButtons} from "./NavButtons";
 
 
-interface AppProps {
+export interface AppProps {
     app: App
 }
 
-class InputName extends React.Component<AppProps> {
-    app: App;
-
-    constructor(props: AppProps) {
-        super(props);
-        this.app = props.app
-    }
-
-    render() {
-        return <div>
-            <h2>What is your name?</h2>
-            <input
-                autoFocus={true}
-                type={"string"}
-                placeholder={"Your Name"}
-                onChange={(event) => {
-                    this.app.setState(Object.assign({}, this.app.state, {
-                        name: event.target.value
-                    }))
-                }}
-                onKeyDown={this.app.goToNextScreen.bind(this.app)}
-            />
-        </div>
-    }
-}
-
-class InputDOB extends React.Component<AppProps> {
-    app: App;
-
-    constructor(props: AppProps) {
-        super(props);
-        this.app = props.app
-    }
-
-    render() {
-        return <div>
-            <h2>Hey {this.app.state.name}, what year you born?</h2>
-            <input
-                autoFocus={true}
-                type={"number"}
-                onChange={(event) => {
-                    this.app.setState(Object.assign({}, this.app.state, {
-                        dob: Number(event.target.value)
-                    }))
-                }}
-                onKeyDown={this.app.goToNextScreen.bind(this.app)}
-            />
-        </div>
-    }
-}
-
-class InputRetireTarget extends React.Component<AppProps> {
-    app: App;
-
-    constructor(props: AppProps) {
-        super(props);
-        this.app = props.app
-    }
-
-    render() {
-        return <div>
-            <h2>{this.app.state.name}, at what age do you want to retire?</h2>
-            <input
-                autoFocus={true}
-                type={"number"}
-                onChange={(event) => {
-                    if (this.app.state.dob !== undefined) {
-                        this.app.setState(Object.assign({}, this.app.state, {
-                            retireTargetAge: Number(event.target.value)
-                        }))
-                    } else {
-                        console.error("YOB IS NOT A NUMBER")
-                    }
-                }}
-                onKeyDown={this.app.goToNextScreen.bind(this.app)}
-            />
-        </div>
-    }
-}
-
-class InputEarnings extends React.Component<AppProps> {
-    app: App;
-
-    constructor(props: AppProps) {
-        super(props);
-        this.app = props.app
-    }
-
-    render() {
-        return <div>
-            <h2>{this.app.state.name}, how much do you earn a year?</h2>
-            <input
-                autoFocus={true}
-                type={"number"}
-                onChange={(event) => {
-                    let current = Number(event.target.value);
-                    this.app.setState(Object.assign({}, this.app.state, {
-                        salary: {
-                            now: current,
-                            halfWay: current * 1.3,
-                            retire: current * 1.5
-                        }
-                    }))
-
-                }}
-                onKeyDown={this.app.goToNextScreen.bind(this.app)}
-            />
-        </div>
-    }
-}
-
-class InputFullEarnings extends React.Component<AppProps> {
-    app: App;
-
-    constructor(props: AppProps) {
-        super(props);
-        this.app = props.app
-    }
-
-    private inputs: { title: string, prop: "now" | "halfWay" | "retire" }[] = [{
-        title: "Now",
-        prop: "now"
-    }, {
-        title: "Half Way",
-        prop: "halfWay"
-    }, {
-        title: "When you retire",
-        prop: "retire"
-    }];
-
-    render() {
-        return <div>
-            <h2>{this.app.state.name}, adjust how much you expect to earn over time!</h2>
-
-            {
-                this.inputs.map((input) => {
-                    const {title, prop} = input;
-                    if (this.app.state.salary === undefined)
-                        return undefined;
-
-                    return <div>
-                        {title}:
-                        <input
-                            autoFocus={true}
-                            type={"number"}
-                            value={this.app.state.salary[prop].toFixed(0)}
-                            onChange={(event) => {
-                                const newSalary = Object.assign({}, this.app.state.salary);
-                                newSalary[prop] = Number(event.target.value);
-                                this.app.setState(Object.assign({}, this.app.state, {
-                                    salary: newSalary
-                                }));
-                            }}
-                            onKeyDown={this.app.goToNextScreen.bind(this.app)}
-                        />
-                        <br/>
-                    </div>
-
-                })
-
-            }
-        </div>
-    }
-}
-
-class InputSaveAmount extends React.Component<AppProps> {
-    app: App;
-
-    constructor(props: AppProps) {
-        super(props);
-        this.app = props.app
-    }
-
-    render() {
-        return <div>
-            <h2>{this.app.state.name}, how much of your income would you like to save (%)?</h2>
-            <input
-                autoFocus={true}
-                type={"number"}
-                onChange={(event) => {
-                    let current = Math.min(Math.max(Number(event.target.value), 0), 100);
-                    this.app.setState(Object.assign({}, this.app.state, {
-                        savingsTarget: current
-                    }))
-                }}
-                onKeyDown={this.app.goToNextScreen.bind(this.app)}
-            />
-        </div>
-    }
-
-}
-
-interface InputReceiptsState {
-    files: string[]
-}
-
-class InputReceipts extends React.Component<AppProps, InputReceiptsState> {
-    app: App;
-
-    constructor(props: AppProps) {
-        super(props);
-        this.app = props.app;
-
-        this.state = {
-            files: []
-        }
-    }
-
-    render() {
-        return <div>
-            <h2>{this.app.state.name}, upload your receipts!</h2>
-            <p>We will process these and suggest how you can save money!</p>
-
-            {this.state.files.length !== 0 && (
-                <h3>{this.state.files.length} receipts uploaded</h3>
-            )}
-
-            <input type="file"
-                   id="avatar"
-                   name="image"
-                   accept="image/png, image/jpeg"
-                   multiple={true}
-
-            />
-
-        </div>;
-    }
-
-}
-
-class OutputCategories extends React.Component<AppProps> {
-    app: App;
-
-    constructor(props: AppProps) {
-        super(props);
-        this.app = props.app
-    }
-}
-
-interface AppState {
-    name?: string,
-    dob?: number,
-    retireTargetAge?: number,
-    salary?: {
-        now: number,
-        halfWay: number,
-        retire: number
-    }
-    savingsTarget?: number // as a proportion of the total
-    retireTarget?: number,
-    spending?: {
-        "item": string
-        "amount": number
-    }[],
-
-    currentScreen: number
+export interface Item {
+    name: string,
+    amount: number,
+    icon?: string
 }
 
 class App extends React.Component<any, AppState> {
@@ -290,16 +48,9 @@ class App extends React.Component<any, AppState> {
             salary: undefined,
             savingsTarget: undefined, // as a proportion of the total
             retireTarget: undefined,
-            spending: undefined,
-            currentScreen: 0
-        }
-
-    }
-
-    componentDidUpdate(prevProps: Readonly<any>, prevState: Readonly<AppState>, snapshot?: any): void {
-
-        if (prevState.currentScreen !== this.state.currentScreen) {
-            console.log(JSON.stringify(this.state));
+            items: [{name: "it", amount: 100}],
+            files: [],
+            currentScreen: 6
         }
 
     }
@@ -308,17 +59,20 @@ class App extends React.Component<any, AppState> {
         return (
             <div className="App">
                 <header className="App-header">
-                    <img src={logo} className="App-logo" alt="logo"/>
                     <h1>[The name]</h1>
+                    <img src={logo} className="App-logo" alt="logo"/>
 
                     {this.screens.map((screen, index: number) => {
                         if (this.state.currentScreen === index) {
                             return <div>
                                 {screen}
-                                <p>Press Enter to continue</p>
-                                <NavButtons previous={index !== 0}
-                                            next={index !== this.screens.length - 1}
-                                            app={this}/>
+                                {index < 6 && (<div>
+                                    <p>Press Enter to continue</p>
+                                    <NavButtons previous={index !== 0}
+                                                next={index !== this.screens.length - 1}
+                                                app={this}/>
+                                </div>)}
+
                             </div>
                         } else {
                             return undefined;
@@ -330,12 +84,8 @@ class App extends React.Component<any, AppState> {
         );
     }
 
-    goToNextScreen(event: React.KeyboardEvent<HTMLInputElement>) {
-
-        if (event.key === 'Enter') {
-
-            console.log("Go to screen called", this.state.currentScreen);
-
+    goToNextScreen(event: React.KeyboardEvent<HTMLInputElement> | undefined) {
+        if (event === undefined || event.key === 'Enter') {
             this.setState(Object.assign({}, this.state, {
                 currentScreen: this.state.currentScreen + 1
             }));
@@ -344,35 +94,24 @@ class App extends React.Component<any, AppState> {
     }
 }
 
-interface NavButtonsProps {
-    previous: boolean,
-    next: boolean,
-    app: App
+interface AppState {
+    name?: string,
+    dob?: number,
+    retireTargetAge?: number,
+    salary?: {
+        now: number,
+        halfWay: number,
+        retire: number
+    }
+    savingsTarget?: number // as a proportion of the total
+    retireTarget?: number,
+
+    items: Item[],
+    files: File[],
+
+    currentScreen: number
 }
 
-class NavButtons extends React.Component<NavButtonsProps> {
-    render() {
-        return (<div>
-            {this.props.previous && (
-                <button
-                    onClick={() => {
-                        this.props.app.setState(Object.assign({}, this.props.app.state, {
-                            currentScreen: this.props.app.state.currentScreen - 1
-                        }))
-                    }}
-                >Previous</button>
-            )}
-            {this.props.next && (
-                <button
-                    onClick={() => {
-                        this.props.app.setState(Object.assign({}, this.props.app.state, {
-                            currentScreen: this.props.app.state.currentScreen + 1
-                        }))
-                    }}
-                >Next</button>
-            )}
-        </div>)
-    }
-}
+
 
 export default App;
